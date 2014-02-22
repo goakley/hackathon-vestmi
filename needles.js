@@ -78,7 +78,7 @@ function generate_sweater_from_image(imgobj) {
 	var ncb = 255;
 	
 	//verticals
-	for (var y = 0; y < imgobj.height; y += varunitsize) {
+	for (var y = -imgobj.height; y < imgobj.height; y += varunitsize) {
 		//draw one line from the left going up in y, one from the right going down in y
 		//45 degree angles for now
 		var nx1 = 0;
@@ -87,28 +87,33 @@ function generate_sweater_from_image(imgobj) {
 		
 		var vc = vcounter; //temps for iterating
 		var hc = hcounter;
-		while (ny >= 0 && ny <= imgobj.height) {
-			imgobj.data[4*ny*w + 4*nx1] = ncr;
-			imgobj.data[4*ny*w + 4*nx1 + 1] = ncg;
-			imgobj.data[4*ny*w + 4*nx1 + 2] = ncb;
-			imgobj.data[4*ny*w + 4*nx1 + 3] = 255;
-			
-			imgobj.data[4*ny*w + 4*nx2] = ncr;
-			imgobj.data[4*ny*w + 4*nx2 + 1] = ncg;
-			imgobj.data[4*ny*w + 4*nx2 + 2] = ncb;
-			imgobj.data[4*ny*w + 4*nx2 + 3] = 255;
+		while (nx1 <= imgobj.width && nx2 >= 0) {
+			//draw if in range
+			if (ny >= 0 && ny <= 640) {
+				imgobj.data[4*ny*w + 4*nx1] = ncr;
+				imgobj.data[4*ny*w + 4*nx1 + 1] = ncg;
+				imgobj.data[4*ny*w + 4*nx1 + 2] = ncb;
+				imgobj.data[4*ny*w + 4*nx1 + 3] = 255;
+				
+				imgobj.data[4*ny*w + 4*nx2] = ncr;
+				imgobj.data[4*ny*w + 4*nx2 + 1] = ncg;
+				imgobj.data[4*ny*w + 4*nx2 + 2] = ncb;
+				imgobj.data[4*ny*w + 4*nx2 + 3] = 255;
+			}
 			
 			var fny = imgobj.height - ny;
-			//draw the other two lines
-			imgobj.data[4*fny*w + 4*nx1] = ncr;
-			imgobj.data[4*fny*w + 4*nx1 + 1] = ncg;
-			imgobj.data[4*fny*w + 4*nx1 + 2] = ncb;
-			imgobj.data[4*fny*w + 4*nx1 + 3] = 255;
-			
-			imgobj.data[4*fny*w + 4*nx2] = ncr;
-			imgobj.data[4*fny*w + 4*nx2 + 1] = ncg;
-			imgobj.data[4*fny*w + 4*nx2 + 2] = ncb;
-			imgobj.data[4*fny*w + 4*nx2 + 3] = 255;
+			if (fny >= 0 && fny <= 640)	
+				//draw the other two lines
+				imgobj.data[4*fny*w + 4*nx1] = ncr;
+				imgobj.data[4*fny*w + 4*nx1 + 1] = ncg;
+				imgobj.data[4*fny*w + 4*nx1 + 2] = ncb;
+				imgobj.data[4*fny*w + 4*nx1 + 3] = 255;
+				
+				imgobj.data[4*fny*w + 4*nx2] = ncr;
+				imgobj.data[4*fny*w + 4*nx2 + 1] = ncg;
+				imgobj.data[4*fny*w + 4*nx2 + 2] = ncb;
+				imgobj.data[4*fny*w + 4*nx2 + 3] = 255;
+			}
 			
 			//update the next coordinate
 			vc--;
@@ -124,56 +129,6 @@ function generate_sweater_from_image(imgobj) {
 			}
 			
 		}
-	}
-	
-	for (var x = 0; x < imgobj.width; x += varunitsize) {
-		//draw one line from the left going up in y, one from the right going down in y
-		//45 degree angles for now
-		var nx = x;
-		var ny1 = 0;
-		var ny2 = imgobj.height;
-		
-		var vc = vcounter; //temps for iterating
-		var hc = hcounter;
-		while (nx >= 0 && nx <= imgobj.width) {
-			imgobj.data[4*ny1*w + 4*nx] = ncr;
-			imgobj.data[4*ny1*w + 4*nx + 1] = ncg;
-			imgobj.data[4*ny1*w + 4*nx + 2] = ncb;
-			imgobj.data[4*ny1*w + 4*nx + 3] = 255;
-			
-			imgobj.data[4*ny2*w + 4*nx] = ncr;
-			imgobj.data[4*ny2*w + 4*nx + 1] = ncg;
-			imgobj.data[4*ny2*w + 4*nx + 2] = ncb;
-			imgobj.data[4*ny2*w + 4*nx + 3] = 255;
-			
-			var fnx = imgobj.width - nx;
-			//draw the other two lines
-			imgobj.data[4*ny1*w + 4*nx] = ncr;
-			imgobj.data[4*ny1*w + 4*nx + 1] = ncg;
-			imgobj.data[4*ny1*w + 4*nx + 2] = ncb;
-			imgobj.data[4*ny1*w + 4*nx + 3] = 255;
-			
-			imgobj.data[4*ny2*w + 4*nx] = ncr;
-			imgobj.data[4*ny2*w + 4*nx + 1] = ncg;
-			imgobj.data[4*ny2*w + 4*nx + 2] = ncb;
-			imgobj.data[4*ny2*w + 4*nx + 3] = 255;
-			
-			//update the next coordinate
-			vc--;
-			hc--;
-			if (vc == 0) {
-				vc = vcounter;
-				ny1++;
-				ny2--;
-			}
-			if (hc == 0) {
-				hc = hcounter;
-				nx++;
-			}	
-		}
-	
-		return imgobj;
-		
 	}
 	
 }
