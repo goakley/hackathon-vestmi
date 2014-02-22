@@ -1,10 +1,20 @@
 (function() {
-    function use_image_with_source(source_url) {
-        var image_source = document.getElementById("image_source");
-        image_source.addEventListener("load", function() {
-            alert("GENERATE SWEATER NOW");
-        });
-        image_source.setAttribute("src", source_url);
+    // use a drawable object to create the sweater
+    function use_image_with_source(width, height, source) {
+        var canvas_source = document.getElementById("image_source");
+        canvas_source.style.display = "inline";
+        canvas_source.width = width;
+        canvas_source.height = height;
+        var context = canvas_source.getContext("2d");
+        context.drawImage(source, 0, 0, width, height);
+        var imgobj = context.getImageData(0, 0, width, height);
+        imgobj = genreate_sweater_from_image(imgobj);
+        var canvas_sweater = document.getElementById("image_sweater");
+        canvas_sweater.style.display = "inline";
+        canvas_sweater.width = imgobj.width;
+        canvas_sweater.height = imgobj.width;
+        context = canvas_sweater.getContext("2d");
+        context.putImageData(imgobj, 0, 0);
     }
     // function to get camera approval
     function onclick_camera_approval(event) {
@@ -16,26 +26,18 @@
         navigator.getUserMedia({video:true}, function(stream) {
             // change the button to take a picture from the webcam
             var video = document.createElement("video");
-            video.src = window.URL.createObjectURL(stream);
-            video.addEventListener("canplay", function(e) {
-                console.log(video.videoWidth);
-                console.log(video.videoHeight);
-            });
-            event.target.parentElement.insertBefore(video, event.target);
-            video.play();
-            var canvas = document.createElement("canvas");
-            canvas.style.display = "none";
-            event.target.parentElement.insertBefore(canvas, event.target);
             event.target.removeChild(event.target.firstChild);
             event.target.appendChild(document.createTextNode("Take a picture with your camera/webcam"));
             event.target.addEventListener("click", function(e) {
                 event.target.disabled = true;
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-                use_image_with_source(canvas.toDataURL("image/png"));
+                use_image_with_source(video.videoWidth, video.videoHeight, video);
             });
-            event.target.disabled = false;
+            video.addEventListener("canplay", function(e) {
+                event.target.disabled = false;
+            });
+            video.src = window.URL.createObjectURL(stream);
+            event.target.parentElement.insertBefore(video, event.target);
+            video.play();
         }, function(error) {
             event.target.removeChild(event.target.firstChild);
             event.target.appendChild(document.createTextNode("Access to the camera/webcam API has been denied"));

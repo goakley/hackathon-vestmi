@@ -8,6 +8,8 @@
                                  navigator.mozGetUserMedia ||
                                  navigator.msGetUserMedia );
     </script>
+    <script src="http://oauth.googlecode.com/svn/code/javascript/sha1.js"></script>
+    <script src="http://oauth.googlecode.com/svn/code/javascript/oauth.js"></script>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
@@ -17,10 +19,28 @@
       <p>Please wait while we load sources...</p>
       <p>If you do not have JavaScript enabled, this will fail.</p>
     </div>
-    <img id="image_source" />
-    <img id="image_sweater" />
+    <canvas id="image_source" width=0 height=0></canvas>
+    <canvas id="image_sweater" width=0 height=0></canvas>
     <!--<button id="button_regen" disabled>Generate a new sweater!</button>-->
     <button id="button_publish" disabled>Publish your sweater!</button>
+    <div id="fb-root"></div>
+    <script>
+      window.fbAsyncInit = function() {
+          FB.init({
+              appId      : '{your-app-id}',
+              status     : true,
+              xfbml      : true
+          });
+      };
+      (function(d, s, id){
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) {return;}
+          js = d.createElement(s); js.id = id;
+          js.src = "//connect.facebook.net/en_US/all.js";
+          fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <script src="needles.js"></script>
     <script src="knitter.js"></script>
   </body>
 </html>
