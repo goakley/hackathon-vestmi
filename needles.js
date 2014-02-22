@@ -1,15 +1,15 @@
 function generate_sweater_from_image(imgobj) {
 	
 	var locr = 0;
-	var locb = 0;
 	var locg = 0;
+	var locb = 0;
 	var localpha = 0;
 	
 	var maxdist = 100;
 	
 	var rarr = [];
-	var barr = [];
 	var garr = [];
+	var barr = [];
 	var rbgvotes = [];
 	var rbglen = 0;
 	
@@ -19,8 +19,8 @@ function generate_sweater_from_image(imgobj) {
 	for(var y = 0; y < imgobj.height; y++) {
 		for(var x = 0; x < imgobj.width; x++) {
 			locr = 4*y*w + 4*x;
-			locb = 4*y*w + 4*x + 1;
-			locg = 4*y*w + 4*x + 2;
+			locg = 4*y*w + 4*x + 1;
+			locb = 4*y*w + 4*x + 2;
 			localpha = 4*y*w + 4*x + 3;
 			
 			var picked = false;
@@ -32,8 +32,8 @@ function generate_sweater_from_image(imgobj) {
 				}
 				if (picked == false) {
 					rarr[rbglen] = imgobj.data[locr];
-					barr[rbglen] = imgobj.data[locb];
 					garr[rbglen] = imgobj.data[locg];
+					barr[rbglen] = imgobj.data[locb];
 					
 					rbgvotes[q] = 1;
 					rbglen++;
@@ -54,8 +54,8 @@ function generate_sweater_from_image(imgobj) {
 	for(var y = 0; y < imgobj.height; y++) {
 		for(var x = 0; x < imgobj.width; x++) {
 			imgobj.data[4*y*w + 4*x] = rarr[best];
-			imgobj.data[4*y*w + 4*x + 1] = barr[best];
-			imgobj.data[4*y*w + 4*x + 2] = garr[best];
+			imgobj.data[4*y*w + 4*x + 1] = garr[best];
+			imgobj.data[4*y*w + 4*x + 2] = barr[best];
 			imgobj.data[4*y*w + 4*x + 3] = 255;
 		}
 	}
@@ -67,15 +67,15 @@ function generate_sweater_from_image(imgobj) {
 	//--------------------------------------------------
 	
 	//how many counts to move in each direction
-	vcounter = 1;
-	hcounter = 1;
+	var vcounter = 1;
+	var hcounter = 1;
 	
 	//4 sides on a rectangle
 	
 	//new color
-	ncr = 255;
-	ncg = 255;
-	ncb = 255;
+	var ncr = 255;
+	var ncg = 255;
+	var ncb = 255;
 	
 	//verticals
 	for (var y = 0; y < imgobj.height; y += varunitsize) {
@@ -84,28 +84,26 @@ function generate_sweater_from_image(imgobj) {
 		var nx1 = 0;
 		var nx2 = imgobj.width;
 		var ny1 = y;
-		var ny2 = y;
 		
 		var vc = vcounter; //temps for iterating
 		var hc = hcounter;
-		while (ny1 >= 0 && ny2 >= 0 && ny1 >= imgobj.height && ny2 <= imgobj.height) {
-			imgobj.data[4*ny1*w + 4*nx1] = ncr;
-			imgobj.data[4*ny1*w + 4*nx1 + 1] = ncg;
-			imgobj.data[4*ny1*w + 4*nx1 + 2] = ncb;
-			imgobj.data[4*ny1*w + 4*nx1 + 3] = 255;
+		while (ny >= 0 && ny <= imgobj.height) {
+			imgobj.data[4*ny*w + 4*nx1] = ncr;
+			imgobj.data[4*ny*w + 4*nx1 + 1] = ncg;
+			imgobj.data[4*ny*w + 4*nx1 + 2] = ncb;
+			imgobj.data[4*ny*w + 4*nx1 + 3] = 255;
 			
-			imgobj.data[4*ny2*w + 4*nx2] = ncr;
-			imgobj.data[4*ny2*w + 4*nx2 + 1] = ncg;
-			imgobj.data[4*ny2*w + 4*nx2 + 2] = ncb;
-			imgobj.data[4*ny2*w + 4*nx2 + 3] = 255;
+			imgobj.data[4*ny*w + 4*nx2] = ncr;
+			imgobj.data[4*ny*w + 4*nx2 + 1] = ncg;
+			imgobj.data[4*ny*w + 4*nx2 + 2] = ncb;
+			imgobj.data[4*ny*w + 4*nx2 + 3] = 255;
 			
 			//update the next coordinate
 			vc--;
 			hc--;
 			if (vc == 0) {
 				vc = vcounter;
-				ny1++;
-				ny2++;
+				ny++;
 			}
 			if (hc == 0) {
 				hc = hcounter;
