@@ -98,7 +98,7 @@ function generate_sweater_from_image(imgobj) {
 			imgobj.data[4*ny*w + 4*nx2 + 2] = ncb;
 			imgobj.data[4*ny*w + 4*nx2 + 3] = 255;
 			
-			var fny = imgobj.height - y;
+			var fny = imgobj.height - ny;
 			//draw the other two lines
 			imgobj.data[4*fny*w + 4*nx1] = ncr;
 			imgobj.data[4*fny*w + 4*nx1 + 1] = ncg;
