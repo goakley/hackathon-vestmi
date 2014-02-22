@@ -12,6 +12,8 @@ function generate_sweater_from_image(imgobj) {
 	var garr = [];
 	var rbgvotes = [];
 	var rbglen = 0;
+	
+	var w = imgobj.width; //I'm lazy :(
 
 	//voting
 	for(var y = 0; y < imgobj.height; y++) {
@@ -113,6 +115,8 @@ function generate_sweater_from_image(imgobj) {
 			
 		}
 	}
+	
+	return imgobj;
 	
 }
 
