@@ -126,7 +126,7 @@ function generate_sweater_from_image(imgobj) {
 		}
 	}
 	
-	for (var x = 0; x < imgobject.width; x += varunitsize) {
+	for (var x = 0; x < imgobj.width; x += varunitsize) {
 		//draw one line from the left going up in y, one from the right going down in y
 		//45 degree angles for now
 		var nx = x;
