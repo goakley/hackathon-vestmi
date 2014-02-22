@@ -60,7 +60,7 @@ function generate_sweater_from_image(imgobj) {
 		}
 	}
 	//data is now only that color	
-	varunitsize = 20;
+	varunitsize = Math.floor((Math.random()*100)+20);
 	
 	//--------------------------------------------------
 	//Diagonals from vertical and horizontals
@@ -72,8 +72,8 @@ function generate_sweater_from_image(imgobj) {
 	}
 	
 	//how many counts to move in each direction
-	var vcounter = 1;
-	var hcounter = 1;
+	var vcounter = Math.floor((Math.random()*5)+1);
+	var hcounter = Math.floor((Math.random()*5)+1);
 	
 	//4 sides on a rectangle
 	
