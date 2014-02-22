@@ -173,6 +173,7 @@ function generate_sweater_from_image(imgobj) {
 		}
 	
 		return imgobj;
+		
 	}
 	
 }
