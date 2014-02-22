@@ -148,15 +148,15 @@ function generate_sweater_from_image(imgobj) {
 			
 			var fnx = imgobj.width - nx;
 			//draw the other two lines
-			imgobj.data[4*fny1*w + 4*nx] = ncr;
-			imgobj.data[4*fny1*w + 4*nx + 1] = ncg;
-			imgobj.data[4*fny1*w + 4*nx + 2] = ncb;
-			imgobj.data[4*fny1*w + 4*nx + 3] = 255;
+			imgobj.data[4*ny1*w + 4*nx] = ncr;
+			imgobj.data[4*ny1*w + 4*nx + 1] = ncg;
+			imgobj.data[4*ny1*w + 4*nx + 2] = ncb;
+			imgobj.data[4*ny1*w + 4*nx + 3] = 255;
 			
-			imgobj.data[4*fny2*w + 4*nx] = ncr;
-			imgobj.data[4*fny2*w + 4*nx + 1] = ncg;
-			imgobj.data[4*fny2*w + 4*nx + 2] = ncb;
-			imgobj.data[4*fny2*w + 4*nx + 3] = 255;
+			imgobj.data[4*ny2*w + 4*nx] = ncr;
+			imgobj.data[4*ny2*w + 4*nx + 1] = ncg;
+			imgobj.data[4*ny2*w + 4*nx + 2] = ncb;
+			imgobj.data[4*ny2*w + 4*nx + 3] = 255;
 			
 			//update the next coordinate
 			vc--;
