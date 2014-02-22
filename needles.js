@@ -1,4 +1,4 @@
-function drawlines(imgobj) {
+function generate_sweater_from_image(imgobj) {
 	
 	var locr = 0
 	var locb = 0
