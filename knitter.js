@@ -8,7 +8,7 @@
         var context = canvas_source.getContext("2d");
         context.drawImage(source, 0, 0, width, height);
         var imgobj = context.getImageData(0, 0, width, height);
-        imgobj = genreate_sweater_from_image(imgobj);
+        imgobj = generate_sweater_from_image(imgobj);
         var canvas_sweater = document.getElementById("image_sweater");
         canvas_sweater.style.display = "inline";
         canvas_sweater.width = imgobj.width;
