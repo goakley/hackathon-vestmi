@@ -83,7 +83,7 @@ function generate_sweater_from_image(imgobj) {
 		//45 degree angles for now
 		var nx1 = 0;
 		var nx2 = imgobj.width;
-		var ny1 = y;
+		var ny = y;
 		
 		var vc = vcounter; //temps for iterating
 		var hc = hcounter;
