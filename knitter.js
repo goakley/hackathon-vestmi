@@ -1,4 +1,11 @@
 (function() {
+    function use_image_with_source(source_url) {
+        var image_source = document.getElementById("image_source");
+        image_source.addEventListener("load", function() {
+            alert("GENERATE SWEATER NOW");
+        });
+        image_source.setAttribute("src", source_url);
+    }
     // function to get camera approval
     function onclick_camera_approval(event) {
         // disable the button while waiting for the approval
@@ -8,13 +15,34 @@
         event.target.appendChild(document.createTextNode("Please approve usage of your camera/webcam"));
         navigator.getUserMedia({video:true}, function(stream) {
             // change the button to take a picture from the webcam
+            var video = document.createElement("video");
+            video.src = window.URL.createObjectURL(stream);
+            video.addEventListener("canplay", function(e) {
+                console.log(video.videoWidth);
+                console.log(video.videoHeight);
+            });
+            event.target.parentElement.insertBefore(video, event.target);
+            video.play();
+            var canvas = document.createElement("canvas");
+            canvas.style.display = "none";
+            event.target.parentElement.insertBefore(canvas, event.target);
             event.target.removeChild(event.target.firstChild);
             event.target.appendChild(document.createTextNode("Take a picture with your camera/webcam"));
+            event.target.addEventListener("click", function(e) {
+                event.target.disabled = true;
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+                use_image_with_source(canvas.toDataURL("image/png"));
+            });
             event.target.disabled = false;
         }, function(error) {
             event.target.removeChild(event.target.firstChild);
             event.target.appendChild(document.createTextNode("Access to the camera/webcam API has been denied"));
         });
+    }
+    // function to take the picture from the camera
+    function onclick_camera(event) {
     }
     // initialization code
     (function() {

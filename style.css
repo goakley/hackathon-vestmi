@@ -7,6 +7,16 @@ ul {
 }
 li {
 }
+video, canvas {
+    margin:auto;
+}
+img {
+    margin:1ex;
+}
+button {
+    margin:1ex auto;
+    display:block;
+}
 #sources {
     padding:4ex 0;
 }
