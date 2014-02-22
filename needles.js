@@ -135,7 +135,7 @@ function generate_sweater_from_image(imgobj) {
 		
 		var vc = vcounter; //temps for iterating
 		var hc = hcounter;
-		while (nx >= 0 && nx <= imgobj.height) {
+		while (nx >= 0 && nx <= imgobj.width) {
 			imgobj.data[4*ny1*w + 4*nx] = ncr;
 			imgobj.data[4*ny1*w + 4*nx + 1] = ncg;
 			imgobj.data[4*ny1*w + 4*nx + 2] = ncb;
