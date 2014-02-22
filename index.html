@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Vest.Mi</title>
+    <script>
+      navigator.getUserMedia = ( navigator.getUesrMedia ||
+                                 navigator.webkitGetUserMedia ||
+                                 navigator.mozGetUserMedia ||
+                                 navigator.msGetUserMedia );
+    </script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1>Vest.Mi</h1>
+    <p>A sweater vest generator for all your profile pictures!  Keeps your profile picture warm and stylish.&#153;</p>
+    <div id="sources">
+      <p>Please wait while we load sources...</p>
+      <p>If you do not have JavaScript enabled, this will fail.</p>
+    </div>
+    <img id="image_source" />
+    <img id="image_sweater" />
+    <button id="button_regen" disabled>Generate a new sweater!</button>
+    <button id="button_publish" disabled>Publish your sweater!</button>
+    <script src="knitter.js"></script>
+  </body>
+</html>
