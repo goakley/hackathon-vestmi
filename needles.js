@@ -163,12 +163,12 @@ function generate_sweater_from_image(imgobj) {
 			hc--;
 			if (vc == 0) {
 				vc = vcounter;
-				ny++;
+				ny1++;
+				ny2--;
 			}
 			if (hc == 0) {
 				hc = hcounter;
-				nx1++;
-				nx2--;
+				nx++;
 			}	
 		}
 	
