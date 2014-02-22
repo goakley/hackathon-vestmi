@@ -66,6 +66,11 @@ function generate_sweater_from_image(imgobj) {
 	//Diagonals from vertical and horizontals
 	//--------------------------------------------------
 	
+	var maxwh = imgobj.height;
+	if (imgobj.width > imgobj.height) {
+		maxwh = imgobj.width;
+	}
+	
 	//how many counts to move in each direction
 	var vcounter = 1;
 	var hcounter = 1;
@@ -78,7 +83,7 @@ function generate_sweater_from_image(imgobj) {
 	var ncb = 255;
 	
 	//verticals
-	for (var y = 0; y < imgobj.height; y += varunitsize) {
+	for (var y = 0; y < maxwh; y += varunitsize) {
 		//draw one line from the left going up in y, one from the right going down in y
 		//45 degree angles for now
 		var nx1 = 0;
@@ -87,7 +92,7 @@ function generate_sweater_from_image(imgobj) {
 		
 		var vc = vcounter; //temps for iterating
 		var hc = hcounter;
-		while (ny >= 0 && ny <= imgobj.height) {
+		while (ny >= 0 && ny <= maxwh) {
 			imgobj.data[4*ny*w + 4*nx1] = ncr;
 			imgobj.data[4*ny*w + 4*nx1 + 1] = ncg;
 			imgobj.data[4*ny*w + 4*nx1 + 2] = ncb;
@@ -98,7 +103,7 @@ function generate_sweater_from_image(imgobj) {
 			imgobj.data[4*ny*w + 4*nx2 + 2] = ncb;
 			imgobj.data[4*ny*w + 4*nx2 + 3] = 255;
 			
-			var fny = imgobj.height - ny;
+			var fny = maxwh - ny;
 			//draw the other two lines
 			imgobj.data[4*fny*w + 4*nx1] = ncr;
 			imgobj.data[4*fny*w + 4*nx1 + 1] = ncg;
