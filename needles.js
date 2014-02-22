@@ -102,7 +102,7 @@ function generate_sweater_from_image(imgobj) {
 			}
 			
 			var fny = imgobj.height - ny;
-			if (fny >= 0 && fny <= 640)	
+			if (fny >= 0 && fny <= 640)	{
 				//draw the other two lines
 				imgobj.data[4*fny*w + 4*nx1] = ncr;
 				imgobj.data[4*fny*w + 4*nx1 + 1] = ncg;
