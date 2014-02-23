@@ -240,8 +240,8 @@ function getcdist(r1, r2, b1, b2, g1, g2) {
 function shortvote(imgobj, width, height) {
 	strw = Math.floor((Math.random()*width));
 	endw = Math.floor((Math.random()*height));
-	strh = Math.floor((Math.random()*(width-strw))+strw);
-	endh = Math.floor((Math.random()*(height-strh))+strh);
+	strh = Math.floor((Math.random()*Math.floor((width-strw)/3))+strw);
+	endh = Math.floor((Math.random()*Math.floor((height-strh)/3))+strh);
 	
 	var locr = 0;
 	var locg = 0;
