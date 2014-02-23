@@ -33,7 +33,7 @@
           });
           FB.Event.subscribe('auth.authResponseChange', function(response) {
               if (response.status === 'connected') {
-                  document.getElementById("button_facebook").disabled = false;
+                  buttons.enable("facebook");
               } else if (response.status === 'not_authorized') {
                   // logged in, unauthorized with app
                   FB.login();
