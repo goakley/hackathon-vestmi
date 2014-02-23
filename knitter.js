@@ -1,11 +1,46 @@
+var buttons = (function(){
+    var result = {};
+    var enabled = true;
+    var buttons = {};
+    // button initialization code
+    (function() {
+        var button = document.getElementById("button_facebook");
+        buttons["facebook"] = {button:button,enabled:false};
+        // attempt to add the camera button
+        if (navigator.getUserMedia) {
+            button = document.createElement("button");
+            button.id = "button_camera";
+            button.appendChild(document.createTextNode("Allow access to your camera/webcam"));
+            buttons["camera"] = {button:button,enabled:true};
+            var li = document.createElement("li");
+            li.appendChild(button);
+            document.getElementById("sources_list").appendChild(li);
+        }
+    })();
+    var update = function(id, enable) {
+        if (!id)
+            enabled = enable;
+        else
+            if (buttons[id])
+                buttons[id].enabled = enable;
+        console.log(buttons[id]);
+        for (var b in buttons) {
+            buttons[b].button.disabled = !(enabled && buttons[b].enabled);
+        }
+    };
+    result.enable = function(id) { update(id, true); };
+    result.disable = function(id) { update(id, false); };
+    return result;
+})();
+
 (function(){
-    var buttons = [];
     var basis = new Image();
     basis.src = "images/basis.png";
 
     // draw a sweater based on the data contained in the image_source canvas
     function draw_sweater(callback) {
         document.getElementById("button_regen").disabled = true;
+        buttons.disable();
         var canvas = document.getElementById("image_source");
         var context = canvas.getContext("2d");
         var imgobj = context.getImageData(0, 0, canvas.width, canvas.height);
@@ -24,6 +59,7 @@
             worker.addEventListener("message", function(e) {
                 context.putImageData(e.data, 0, 0);
                 document.getElementById("button_regen").disabled = false;
+                buttons.enable();
                 if (callback)
                     callback();
             });
@@ -54,9 +90,7 @@
             event.target.addEventListener("click", function(e) {
                 event.target.disabled = true;
                 place_image(video.videoWidth, video.videoHeight, video);
-                draw_sweater(function() {
-                    event.target.disabled = false;
-                });
+                draw_sweater();
             });
             video.addEventListener("canplay", function(e) {
                 event.target.disabled = false;
@@ -69,6 +103,8 @@
             event.target.appendChild(document.createTextNode("Access to the camera/webcam API has been denied"));
         });
     }
+    if (document.getElementById("button_camera"))
+        document.getElementById("button_camera").addEventListener("click", onclick_camera_approval);
 
     // function to get facebook image
     function onclick_facebook(event) {
@@ -78,35 +114,19 @@
             var img = new Image();
             img.addEventListener("load", function() {
                 place_image(img.width, img.height, img);
-                draw_sweater(function(){event.target.disabled = false;});
+                draw_sweater();
             });
             img.crossOrigin = '';
             img.src = response.data.url;
         });
     }
+    document.getElementById("button_facebook").addEventListener("click", onclick_facebook);
 
-    // button initialization code
-    (function() {
-        var button = document.getElementById("button_facebook");
-        button.addEventListener("click", onclick_facebook);
-        buttons.push(button);
-        // attempt to add the camera button
-        if (navigator.getUserMedia) {
-            var button = document.createElement("button");
-            button.id = "camera";
-            button.appendChild(document.createTextNode("Allow access to your camera/webcam"));
-            button.addEventListener("click", onclick_camera_approval);
-            buttons.push(button);
-            var li = document.createElement("li");
-            li.appendChild(button);
-            document.getElementById("sources_list").appendChild(li);
-        }
-    })();
-    // disable the regen button until it's activated for the first time
+    // have the regen button redraw a sweater
     document.getElementById("button_regen").addEventListener("click", function(e) {
-        e.target.disabled = true;
         draw_sweater();
     });
+
     // make the canvases click-to-generate-image-able
     document.getElementById("image_sweater").addEventListener("click", function(e) {
         window.open(e.target.toDataURL("image/png"));
