@@ -247,6 +247,8 @@ function generate_sweater_from_image(imgobj) {
 		}
 	}	
 	
+	sleeves(original, imgobj.data, imgobj.height, imgobj.width);
+	
 	return imgobj;
 	
 }
@@ -346,4 +348,52 @@ function shortvote(imgobj, width, height) {
 	bestarr[3] = 255;
 	
 	return bestarr;
+}
+
+function sleeves(olddata, newdata, height, width) {
+	
+	var circlesize = Math.floor(width/4);
+	var leftcenter = -Math.floor(circlesize/3);
+	var rightcenter = width + Math.floor(circlesize/3);
+	
+	//triangle
+	var off = Math.floor(width/8);
+
+	for(var y = 0; y < height; y++) {
+		for(var x = 0; x < width; x++) {
+			//circles
+			if ((circdist(leftcenter, x, 0, y) < circlesize) || (circdist(rightcenter, x, 0, y) < circlesize)) {
+				if ((circdist(leftcenter, x, 20, y) < circlesize - 6) || (circdist(rightcenter, x, 20, y) < circlesize - 6)) { //black edges
+					newdata[4*y*width + 4*x] = olddata[4*y*width + 4*x];
+					newdata[4*y*width + 4*x + 1] = olddata[4*y*width + 4*x + 1];
+					newdata[4*y*width + 4*x + 2] = olddata[4*y*width + 4*x + 2];
+					newdata[4*y*width + 4*x + 3] = olddata[4*y*width + 4*x + 3];
+				}
+				else {
+					newdata[4*y*width + 4*x] = 0;
+					newdata[4*y*width + 4*x + 1] = 0;
+					newdata[4*y*width + 4*x + 2] = 0;
+					newdata[4*y*width + 4*x + 3] = 255;	
+				}
+			}
+		}
+	}
+	
+	for(var y = 0; y < height; y++) {
+		for(var x = 0; x < width; x++) {
+			if (Math.abs(x - Math.floor(width/2)) < off) {
+				newdata[4*y*width + 4*x] = olddata[4*y*width + 4*x];
+				newdata[4*y*width + 4*x + 1] = olddata[4*y*width + 4*x + 1];
+				newdata[4*y*width + 4*x + 2] = olddata[4*y*width + 4*x + 2];
+				newdata[4*y*width + 4*x + 3] = olddata[4*y*width + 4*x + 3];				
+			}
+		}
+		off -= 0.5
+	}
+
+	return newdata
+}
+
+function circdist(x1, x2, y1, y2) {
+	return Math.sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2))
 }

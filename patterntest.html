@@ -1,62 +1,63 @@
-<!DOCTYPE HTML>
 <html>
-  <head>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
     <style>
       body {
         margin: 0px;
         padding: 0px;
       }
-    </style>
-  </head>
-  <body>
-    <canvas id="myCanvas" width="578" height="400"></canvas>
-    <script>
-      function drawImage(imageObj) {
-        var canvas = document.getElementById('myCanvas');
-        var context = canvas.getContext('2d');
-        var imageX = 69;
-        var imageY = 50;
-        var imageWidth = imageObj.width;
-        var imageHeight = imageObj.height;
+    </style></head>
+<body>
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+  FB.init({
+    appId      : '1452968264934419',
+    status     : true, // check login status
+    cookie     : true, // enable cookies to allow the server to access the session
+    xfbml      : true  // parse XFBML
+  });
 
-        context.drawImage(imageObj, imageX, imageY);
+  FB.Event.subscribe('auth.authResponseChange', function(response) {
+    // Here we specify what we do with the response anytime this event occurs. 
+    if (response.status === 'connected') {
+      getImage();
+    } else if (response.status === 'not_authorized') {
+      // In this case, the person is logged into Facebook, but not into the app, so we call
+      // FB.login() to prompt them to do so. 
+      FB.login();
+    } else {
+      // In this case, the person is not logged into Facebook, so we call the login() 
+      // function to prompt them to do so.
+      FB.login();
+    }
+  });
+  };
 
-        var imageData = context.getImageData(imageX, imageY, imageWidth, imageHeight);
-        var data = imageData.data;
+  // Load the SDK asynchronously
+  (function(d){
+   var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+   if (d.getElementById(id)) {return;}
+   js = d.createElement('script'); js.id = id; js.async = true;
+   js.src = "//connect.facebook.net/en_US/all.js";
+   ref.parentNode.insertBefore(js, ref);
+  }(document));
 
-        // iterate over all pixels
-        for(var i = 0, n = data.length; i < n; i += 4) {
-          var red = data[i];
-          var green = data[i + 1];
-          var blue = data[i + 2];
-          var alpha = data[i + 3];
-        }
+  // Here we run a very simple test of the Graph API after login is successful. 
+  // This testAPI() function is only called in those cases. 
+  function getImage() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api("/me/picture?width=180&height=180",  function(response) {
+			console.log(response.data.url);
+	});
+  }
+</script>
 
-        // pick out pixel data from x, y coordinate
-        var x = 20;
-        var y = 20;
-        var red = data[((imageWidth * y) + x) * 4];
-        var green = data[((imageWidth * y) + x) * 4 + 1];
-        var blue = data[((imageWidth * y) + x) * 4 + 2];
-        var alpha = data[((imageWidth * y) + x) * 4 + 3];
-        
-        // iterate over all pixels based on x and y coordinates
-        for(var y = 0; y < imageHeight; y++) {
-          // loop through each column
-          for(var x = 0; x < imageWidth; x++) {
-            var red = data[((imageWidth * y) + x) * 4];
-            var green = data[((imageWidth * y) + x) * 4 + 1];
-            var blue = data[((imageWidth * y) + x) * 4 + 2];
-            var alpha = data[((imageWidth * y) + x) * 4 + 3];
-          }
-        }
-      }
-      var imageObj = new Image();
-      imageObj.onload = function() {
-        drawImage(this);
-      };
-      imageObj.src = 'http://www.html5canvastutorials.com/demos/assets/darth-vader.jpg';
+<!--
+  Below we include the Login Button social plugin. This button uses the JavaScript SDK to
+  present a graphical Login button that triggers the FB.login() function when clicked. -->
 
-    </script>
-  </body>
+<fb:login-button show-faces="true" width="200" max-rows="1"></fb:login-button>
+</body>
 </html>
