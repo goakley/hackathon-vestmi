@@ -91,6 +91,7 @@ buttons.enable();
             canvas.height = height;
             canvas.getContext("2d").drawImage(source, 0, 0, width, height);
         }
+        document.getElementById("button_makeprofile").disabled = true;
         document.getElementById("button_regen").disabled = true;
         buttons.disable();
         canvas = document.getElementById("image_source");
@@ -181,7 +182,15 @@ buttons.enable();
                         if (req.readyState == 4) {
                             if (req.status == 200) {
                                 var pid = JSON.parse(req.responseText).id;
-                                window.open("http://www.facebook.com/photo.php?fbid="+pid+"&makeprofile=1");
+                                var _button = document.getElementById("button_makeprofile");
+                                var button = _button.cloneNode(true);
+                                _button.parentNode.replaceChild(button, _button);
+                                button.disabled = false;
+                                button.addEventListener("click", function(event){
+                                    event.target.disabled = true;
+                                    window.open("http://www.facebook.com/photo.php?fbid="+pid+"&makeprofile=1");
+                                });
+
                             } else {
                                 console.log("ERROR:");
                                 console.log(req.status);
@@ -199,6 +208,7 @@ buttons.enable();
     document.getElementById("button_regen").addEventListener("click", function(e) {
         draw_sweater();
     });
+
 
     // make the canvases click-to-generate-image-able
     document.getElementById("image_sweater").addEventListener("click", function(e) {
