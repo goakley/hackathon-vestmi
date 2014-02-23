@@ -1,11 +1,80 @@
-(function() {
-    var buttons = [];
-    var basis = new Image();
-    basis.src = "images/basis.png";
+var buttons = (function(){
+    var result = {};
+    var enabled = true;
+    var buttons = {};
+    // button initialization code
+    (function() {
+        var button = document.getElementById("button_facebook");
+        buttons["facebook"] = {button:button,enabled:false};
+        // attempt to add the camera button
+        if (navigator.getUserMedia) {
+            button = document.getElementById("button_camera");
+            button.removeChild(button.firstChild);
+            button.appendChild(document.createTextNode("Allow access to your camera/webcam"));
+            buttons["camera"] = {button:button,enabled:true};
+        }
+    })();
+    var update = function(id, enable) {
+        if (!id)
+            enabled = enable;
+        else
+            if (buttons[id])
+                buttons[id].enabled = enable;
+        for (var b in buttons) {
+            buttons[b].button.disabled = !(enabled && buttons[b].enabled);
+        }
+    };
+    result.enable = function(id) { update(id, true); };
+    result.disable = function(id) { update(id, false); };
+    return result;
+})();
+buttons.enable();
 
-    // draw a sweater based on the data contained in the image_source canvas
-    function draw_sweater(callback) {
-        var canvas = document.getElementById("image_source");
+(function(){
+    var minecraft = (function() {
+        var result = {};
+        var basis = new Image();
+        basis.onload = function() { result.redraw(); };
+        basis.src = "images/basis.png";
+        var image = undefined;
+        result.redraw = function() {
+            document.getElementById("image_minecraft").getContext("2d").drawImage((image ? image : basis), 0, 0, 64, 32);
+            console.log(document.getElementById("image_minecraft").toDataURL("image/png"));
+        };
+        var reqevent = undefined;
+        document.getElementById("minecraft_name").addEventListener("input", function(event) {
+            if (reqevent)
+                window.clearTimeout(reqevent);
+            reqevent = window.setTimeout(function() {
+                image = undefined;
+                var img = new Image();
+                img.onerror = function(){ image = undefined; result.redraw(); };
+                img.onload = function(){
+                    /*
+                    document.getElementById("image_minecraft").getContext("2d").drawImage(img, 0, 0, 64, 32);
+                    var image = new Image();
+                    image.src = document.getElementById("image_minecraft").toDataURL("image/png");
+                     */
+                    result.redraw();
+                };
+                img.src = "http://minecraft.net/skin/"+event.target.value+".png";
+            }, 1024);
+        });
+        return result;
+    })();
+    console.log(minecraft);
+
+    // draw a sweater based on the given source information
+    function draw_sweater(width, height, source) {
+        if (source) {
+            var canvas = document.getElementById("image_source");
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext("2d").drawImage(source, 0, 0, width, height);
+        }
+        document.getElementById("button_regen").disabled = true;
+        buttons.disable();
+        canvas = document.getElementById("image_source");
         var context = canvas.getContext("2d");
         var imgobj = context.getImageData(0, 0, canvas.width, canvas.height);
         canvas = document.getElementById("image_sweater");
@@ -17,36 +86,19 @@
         worker.addEventListener("message", function(e) {
             context.putImageData(e.data, 0, 0);
             worker = new Worker("teddy.js");
+            minecraft.redraw();
             canvas = document.getElementById("image_minecraft");
             context = canvas.getContext("2d");
-            context.drawImage(basis, 0, 0, 64, 32);
             worker.addEventListener("message", function(e) {
                 context.putImageData(e.data, 0, 0);
                 document.getElementById("button_regen").disabled = false;
-                if (callback)
-                    callback();
+                buttons.enable();
+                buttons.enable();
             });
+            console.log(context.getImageData(0,0,64,32));
             worker.postMessage({basis:context.getImageData(0,0,64,32),sweater:e.data});
         });
         worker.postMessage(imgobj);
-    }
-
-    function place_image(width, height, source) {
-        var canvas = document.getElementById("image_source");
-        canvas.width = width;
-        canvas.height = height;
-        canvas.getContext("2d").drawImage(source, 0, 0, width, height);
-    }
-
-    // use a drawable object to create the sweater
-    function use_image_with_source(width, height, source, callback) {
-        var canvas_source = document.getElementById("image_source");
-        canvas_source.style.display = "inline";
-        canvas_source.width = width;
-        canvas_source.height = height;
-        var context = canvas_source.getContext("2d");
-        context.drawImage(source, 0, 0, width, height);
-        draw_sweater(callback);
     }
 
     // function to get camera approval
@@ -63,10 +115,7 @@
             event.target.appendChild(document.createTextNode("Take a picture with your camera/webcam"));
             event.target.addEventListener("click", function(e) {
                 event.target.disabled = true;
-                use_image_with_source(video.videoWidth, video.videoHeight, video);
-                draw_sweater(function() {
-                    event.target.disabled = false;
-                });
+                draw_sweater(video.videoWidth, video.videoHeight, video);
             });
             video.addEventListener("canplay", function(e) {
                 event.target.disabled = false;
@@ -79,42 +128,28 @@
             event.target.appendChild(document.createTextNode("Access to the camera/webcam API has been denied"));
         });
     }
+    if (document.getElementById("button_camera"))
+        document.getElementById("button_camera").addEventListener("click", onclick_camera_approval);
 
-    // button initialization code
-    (function() {
-        // attempt to add the camera button
-        if (navigator.getUserMedia) {
-            var button = document.createElement("button");
-            button.id = "camera";
-            button.appendChild(document.createTextNode("Allow access to your camera/webcam"));
-            button.addEventListener("click", onclick_camera_approval);
-            buttons.push(button);
-        }
-        // add the buttons to the site
-        var sources = document.getElementById("sources");
-        while (sources.firstChild)
-            sources.removeChild(sources.firstChild);
-        if (buttons.length) {
-            // append the list of source buttons
-            var list = document.createElement("ul");
-            for (var i = 0; i < buttons.length; i++) {
-                var li = document.createElement("li");
-                li.appendChild(buttons[i]);
-                list.appendChild(li);
-            }
-            sources.appendChild(list);
-        } else {
-            // tell the user there are no sweater options
-            var p = document.createElement("p");
-            p.appendChild(document.createTextNode("Sorry, we will be unable to generate a sweater for you!"));
-            sources.appendChild(p);
-        }
-    })();
-    // disable the regen button until it's activated for the first time
+    // function to get facebook image
+    function onclick_facebook(event) {
+        event.target.disabled = true;
+        FB.api("/me/picture?type=large", function(response) {
+            var img = new Image();
+            img.addEventListener("load", function() {
+                draw_sweater(img.width, img.height, img);
+            });
+            img.crossOrigin = '';
+            img.src = response.data.url;
+        });
+    }
+    document.getElementById("button_facebook").addEventListener("click", onclick_facebook);
+
+    // have the regen button redraw a sweater
     document.getElementById("button_regen").addEventListener("click", function(e) {
-        e.target.disabled = true;
         draw_sweater();
     });
+
     // make the canvases click-to-generate-image-able
     document.getElementById("image_sweater").addEventListener("click", function(e) {
         window.open(e.target.toDataURL("image/png"));
