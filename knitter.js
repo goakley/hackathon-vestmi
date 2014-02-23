@@ -17,7 +17,8 @@
             context = canvas_sweater.getContext("2d");
             context.putImageData(imgobj, 0, 0);
             document.getElementById("button_regen").disabled = false;
-            callback();
+            if (callback)
+                callback();
         });
         worker.postMessage(imgobj);
     }
