@@ -117,7 +117,6 @@ buttons.enable();
                 if (buttons.is_enabled("facebook"))
                     document.getElementById("button_publish").disabled = false;
             });
-            console.log(context.getImageData(0,0,64,32));
             worker.postMessage({basis:context.getImageData(0,0,64,32),sweater:e.data});
         });
         worker.postMessage(imgobj);
