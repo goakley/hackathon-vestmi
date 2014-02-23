@@ -3,6 +3,8 @@
         e.target.disabled = true;
         draw_sweater();
     });
+    var basis = new Image();
+    basis.src = "images/basis.png";
     function draw_sweater(callback) {
         var canvas_source = document.getElementById("image_source");
         var context = canvas_source.getContext("2d");
@@ -16,9 +18,17 @@
             imgobj = e.data;
             context = canvas_sweater.getContext("2d");
             context.putImageData(imgobj, 0, 0);
-            document.getElementById("button_regen").disabled = false;
-            if (callback)
-                callback();
+            var worker = new Worker("teddy.js");
+            var canvas_minecraft = document.getElementById("image_minecraft");
+            context = canvas_minecraft.getContext("2d");
+            context.drawImage(basis, 0, 0, 64, 32);
+            worker.addEventListener("message", function(e) {
+                context.putImageData(e.data, 0, 0);
+                document.getElementById("button_regen").disabled = false;
+                if (callback)
+                    callback();
+            });
+            worker.postMessage({basis:context.getImageData(0,0,64,32),sweater:imgobj});
         });
         worker.postMessage(imgobj);
     }

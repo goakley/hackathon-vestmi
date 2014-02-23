@@ -10,9 +10,6 @@ li {
 video, canvas {
     margin:auto;
 }
-img {
-    margin:1ex;
-}
 button {
     margin:1ex auto;
     display:block;
