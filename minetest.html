@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  </head>
+  <body>
+    <img id="img" src="images/basis.png"></img>
+    <canvas id="canvas"></canvas>
+    <script>
+      var canvas = document.getElementById("canvas");
+      var img = document.getElementById("img");
+      img.onload = function() {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+          skin = ctx.getImageData(0, 0, img.width, img.height);
+          newskin = teddy(skin);
+          ctx.putImageData(newskin, 0, 0);
+      };
+    </script>
+    <script src="teddy.js"></script>
+  </body>
+</html>

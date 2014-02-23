@@ -7,11 +7,14 @@ ul {
 }
 li {
 }
+#sources {
+    display:block;
+}
 video, canvas {
     margin:auto;
 }
-img {
-    margin:1ex;
+#image_source, #image_sweater {
+    display:inline;
 }
 button {
     margin:1ex auto;
