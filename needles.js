@@ -92,8 +92,8 @@ function generate_sweater_from_image(imgobj) {
 	
 	//data is now only that color	
 	varunitsize = Math.floor((Math.random()*60)+40);
-	var mindwidth = 2;
-	var maxwidth = 9;
+	var mindwidth = 4;
+	var maxwidth = 11;
 	
 	//how many counts to move in each direction
 	var vcounter = Math.floor((Math.random()*5)+1);
