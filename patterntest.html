@@ -11,6 +11,7 @@
 <body>
 <div id="fb-root"></div>
 <script>
+	var albumID;
   window.fbAsyncInit = function() {
   FB.init({
     appId      : '1452968264934419',
@@ -19,44 +20,92 @@
     xfbml      : true  // parse XFBML
   });
 
-  FB.Event.subscribe('auth.authResponseChange', function(response) {
+    FB.Event.subscribe('auth.authResponseChange', function(response) {
+	console.log("Testing Top of Function");
     // Here we specify what we do with the response anytime this event occurs. 
     if (response.status === 'connected') {
-      getImage();
+		getImage();
+		getAlbumInfo();
     } else if (response.status === 'not_authorized') {
-      // In this case, the person is logged into Facebook, but not into the app, so we call
-      // FB.login() to prompt them to do so. 
-      FB.login();
+        // In this case, the person is logged into Facebook, but not into the app, so we call
+        // FB.login() to prompt them to do so. 
+		FB.login(function(response){},
+			{scope: 'email,friends_birthday,user_photos,friends_photos,publish_actions'});
     } else {
       // In this case, the person is not logged into Facebook, so we call the login() 
       // function to prompt them to do so.
-      FB.login();
-    }
+      FB.login(function(response){},
+	  {scope: 'email,friends_birthday,user_photos,friends_photos,publish_actions'});
+    } 
   });
-  };
+};
 
   // Load the SDK asynchronously
   (function(d){
-   var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-   if (d.getElementById(id)) {return;}
-   js = d.createElement('script'); js.id = id; js.async = true;
-   js.src = "//connect.facebook.net/en_US/all.js";
-   ref.parentNode.insertBefore(js, ref);
+	   var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+	   if (d.getElementById(id)) {return;}
+	   js = d.createElement('script'); js.id = id; js.async = true;
+	   js.src = "//connect.facebook.net/en_US/all.js";
+	   ref.parentNode.insertBefore(js, ref);
   }(document));
 
   // Here we run a very simple test of the Graph API after login is successful. 
   // This testAPI() function is only called in those cases. 
   function getImage() {
-    console.log('Welcome!  Fetching your information.... ');
+    console.log('Welcome!  Fetching your image.... ');
     FB.api("/me/picture?width=180&height=180",  function(response) {
 			console.log(response.data.url);
 	});
   }
+  
+  // Here we get information about the album
+  function getAlbumInfo(){
+	console.log("Getting album information...");
+	FB.api('/me/albums', function(response){
+		for(var index = 0; index < response.data.length; index++){
+			console.log("Testing Name: " + response.data[index].name);
+			if(response.data[index].name == "Profile Pictures")
+				uploadImage(response.data[index].id);
+		}
+	});
+  }
+  
+  //Check to see which permissions are granted to the application.
+  function checkPermission(){
+		console.log("Checking apps permissions...");
+		FB.api({ method: 'fql.query', query: 'SELECT     user_status,friends_status,user_photos,friends_photos,user_location,friends_location FROM     permissions WHERE uid=me()' }, function(resp) {        
+		for(var key in resp[0]) {        
+			if(resp[0][key] === "1")        
+				console.log(key+' is granted');        
+			else        
+				console.log(key+' is not granted');        
+			}        
+		});   
+  }
+  // Here we upload the changed photo to the user's album
+  // Currently uses imgURL need to change for final version
+  function uploadImage(albumID){ 
+	console.log("Starting Upload...");
+    var imgURL = "http://resources.shopstyle.com/sim/3c/29/3c29054e75b1b63b352ad649256e2d9c/laurence-smith-sweater-vests.jpg";
+    var imgURL = "http://3.bp.blogspot.com/_PSI1L9Db3wQ/SSXZv0bUhmI/AAAAAAAAmbY/4pF5p14sULU/s400/Men+Argyle+sweater+vest.jpg";
+		console.log('"/'+albumID+'"');
+		FB.api('/'+albumID+'/photos/', 'post', {
+			message:'photo description',
+			url:imgURL        
+		}, function(response){
+			if (!response || response.error) {
+				alert('Error occured');
+			} else {
+				alert('Post ID: ' + response.id);
+			}
+		});
+	}
 </script>
 
 <!--
   Below we include the Login Button social plugin. This button uses the JavaScript SDK to
-  present a graphical Login button that triggers the FB.login() function when clicked. -->
+  present a graphical Login button that triggers the FB.login() function when clicked. 
+  Button is used to avoid ad blockers in browsers.-->
 
 <fb:login-button show-faces="true" width="200" max-rows="1"></fb:login-button>
 </body>
