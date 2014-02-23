@@ -20,7 +20,6 @@ var buttons = (function(){
         else
             if (buttons[id])
                 buttons[id].enabled = enable;
-        console.log(buttons[id]);
         for (var b in buttons) {
             buttons[b].button.disabled = !(enabled && buttons[b].enabled);
         }
@@ -29,6 +28,7 @@ var buttons = (function(){
     result.disable = function(id) { update(id, false); };
     return result;
 })();
+buttons.enable();
 
 (function(){
     var basis = new Image();
