@@ -31,8 +31,38 @@ var buttons = (function(){
 buttons.enable();
 
 (function(){
-    var basis = new Image();
-    basis.src = "images/basis.png";
+    var minecraft = (function() {
+        var result = {};
+        var basis = new Image();
+        basis.onload = function() { result.redraw(); };
+        basis.src = "images/basis.png";
+        var image = undefined;
+        result.redraw = function() {
+            document.getElementById("image_minecraft").getContext("2d").drawImage((image ? image : basis), 0, 0, 64, 32);
+            console.log(document.getElementById("image_minecraft").toDataURL("image/png"));
+        };
+        var reqevent = undefined;
+        document.getElementById("minecraft_name").addEventListener("input", function(event) {
+            if (reqevent)
+                window.clearTimeout(reqevent);
+            reqevent = window.setTimeout(function() {
+                image = undefined;
+                var img = new Image();
+                img.onerror = function(){ image = undefined; result.redraw(); };
+                img.onload = function(){
+                    /*
+                    document.getElementById("image_minecraft").getContext("2d").drawImage(img, 0, 0, 64, 32);
+                    var image = new Image();
+                    image.src = document.getElementById("image_minecraft").toDataURL("image/png");
+                     */
+                    result.redraw();
+                };
+                img.src = "http://minecraft.net/skin/"+event.target.value+".png";
+            }, 1024);
+        });
+        return result;
+    })();
+    console.log(minecraft);
 
     // draw a sweater based on the given source information
     function draw_sweater(width, height, source) {
@@ -56,15 +86,16 @@ buttons.enable();
         worker.addEventListener("message", function(e) {
             context.putImageData(e.data, 0, 0);
             worker = new Worker("teddy.js");
+            minecraft.redraw();
             canvas = document.getElementById("image_minecraft");
             context = canvas.getContext("2d");
-            context.drawImage(basis, 0, 0, 64, 32);
             worker.addEventListener("message", function(e) {
                 context.putImageData(e.data, 0, 0);
                 document.getElementById("button_regen").disabled = false;
                 buttons.enable();
                 buttons.enable();
             });
+            console.log(context.getImageData(0,0,64,32));
             worker.postMessage({basis:context.getImageData(0,0,64,32),sweater:e.data});
         });
         worker.postMessage(imgobj);
@@ -104,7 +135,6 @@ buttons.enable();
     function onclick_facebook(event) {
         event.target.disabled = true;
         FB.api("/me/picture?type=large", function(response) {
-            console.log(response.data.url);
             var img = new Image();
             img.addEventListener("load", function() {
                 draw_sweater(img.width, img.height, img);
