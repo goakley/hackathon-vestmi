@@ -34,11 +34,17 @@ buttons.enable();
     var basis = new Image();
     basis.src = "images/basis.png";
 
-    // draw a sweater based on the data contained in the image_source canvas
-    function draw_sweater(callback) {
+    // draw a sweater based on the given source information
+    function draw_sweater(width, height, source) {
+        if (source) {
+            var canvas = document.getElementById("image_source");
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext("2d").drawImage(source, 0, 0, width, height);
+        }
         document.getElementById("button_regen").disabled = true;
         buttons.disable();
-        var canvas = document.getElementById("image_source");
+        canvas = document.getElementById("image_source");
         var context = canvas.getContext("2d");
         var imgobj = context.getImageData(0, 0, canvas.width, canvas.height);
         canvas = document.getElementById("image_sweater");
@@ -57,19 +63,13 @@ buttons.enable();
                 context.putImageData(e.data, 0, 0);
                 document.getElementById("button_regen").disabled = false;
                 buttons.enable();
+                buttons.enable();
                 if (callback)
                     callback();
             });
             worker.postMessage({basis:context.getImageData(0,0,64,32),sweater:e.data});
         });
         worker.postMessage(imgobj);
-    }
-
-    function place_image(width, height, source) {
-        var canvas = document.getElementById("image_source");
-        canvas.width = width;
-        canvas.height = height;
-        canvas.getContext("2d").drawImage(source, 0, 0, width, height);
     }
 
     // function to get camera approval
@@ -86,8 +86,7 @@ buttons.enable();
             event.target.appendChild(document.createTextNode("Take a picture with your camera/webcam"));
             event.target.addEventListener("click", function(e) {
                 event.target.disabled = true;
-                place_image(video.videoWidth, video.videoHeight, video);
-                draw_sweater();
+                draw_sweater(video.videoWidth, video.videoHeight, video);
             });
             video.addEventListener("canplay", function(e) {
                 event.target.disabled = false;
@@ -110,8 +109,7 @@ buttons.enable();
             console.log(response.data.url);
             var img = new Image();
             img.addEventListener("load", function() {
-                place_image(img.width, img.height, img);
-                draw_sweater();
+                draw_sweater(img.width, img.height, img);
             });
             img.crossOrigin = '';
             img.src = response.data.url;
