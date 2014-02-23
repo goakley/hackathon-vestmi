@@ -49,18 +49,14 @@ function teddy(basis, sweater) {
 
     // Find the darkest color, the lightest color, and a mid color
     var colors_to_use = new Array();
-    colors_to_use.push(colors.shift());
-    if (colors.length >= 2) {
-        colors_to_use[0] = colors.shift();
-        colors_to_use[2] = colors.pop();
+    if (colors.length > 2) {
+        colors_to_use[0] = colors[0];
+        colors_to_use[1] = colors[Math.floor(colors.length/2)];
+        colors_to_use[2] = colors[colors.length-1];
     } else {
-        colors_to_use = colors
+        colors_to_use = colors;
     }
-    if (colors.length > 0) {
-        var idx = Math.floor(colors.length/2);
-        colors_to_use[1] = colors[idx];
-    }
-
+    
     return draw_vest(basis, colors_to_use);
 }
 
