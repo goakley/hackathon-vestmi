@@ -3,6 +3,7 @@ self.addEventListener("message", function(e) {
     self.postMessage(imgobj);
 });
 
+function brightness(r,g,b) { return Math.sqrt(r*r*0.241 + g*g*0.691 + b*b*.068) };
 function Color(r,g,b,a) {
     this.r = r;
     this.g = g;
@@ -19,7 +20,6 @@ function teddy(basis, sweater) {
     function pixel_idx(x,y) { return 4*y*swidth + x*4; };
     // brightness from
     // http://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
-    function brightness(r,g,b) { return Math.sqrt(r*r*0.241 + g*g*0.691 + b*b*.068) };
     function to_int(r,g,b,a) {
         return ((r << 24) | (g << 16) | (b << 8) | a);
     };
@@ -74,11 +74,11 @@ function draw_vest(basis, colors) {
     function pixel_idx(x,y) { return 4*y*bwidth + 4*x };
     // grab all the colors from the array
     var dark, middle, bright;
-    if colors.length == 1 {
+    if (colors.length == 1) {
         dark = colors[0];
         middle = dark;
         bright = dark;
-    } else if (colors.length == 2 {
+    } else if (colors.length == 2) {
         dark = colors[0];
         middle = dark;
         bright = colors[1];
