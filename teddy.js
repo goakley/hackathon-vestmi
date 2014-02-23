@@ -6,7 +6,6 @@ self.addEventListener("message", function(e) {
 function teddy(basis, sweater) {
     var sheight = sweater.height;
     var swidth = sweater.width;
-    function pixel_idx(x,y) { return 4*y*swidth + 4*x };
     // brightness from
     // http://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
     function brightness(r,g,b) { return Math.sqrt(r*r*0.241 + g*g*0.691 + b*b*.068) };
@@ -63,5 +62,54 @@ function teddy(basis, sweater) {
 }
 
 function draw_vest(basis, colors) {
+    var starty = 22;
+    var endy   = 29;
+    var startx = 16;
+    var len    = 24; //the vest area is 24 px wide
+    function pixel_idx(x,y) { return 4*y*swidth + 4*x };
+    // grab all the colors from the array
+    var dark, middle, bright;
+    dark = colors[0];
+    // if we only have 1 color, then the entire vest will be the dark color
+    if colors.length > 1 {
+        middle = colors[1];
+    } else {
+        middle = dark;
+    }
+    if colors.length > 2 {
+        bright = colors[2];
+    } else {
+        bright = dark;
+    }
+
+    for (var y = starty; y <= endy; y++) {
+        var idx = pixel_idx(y, startx);
+        var end = idx + len;
+        for (idx; idx <= end; idx+=4) {
+            var r = basis.data[idx];
+            var g = basis.data[idx+1];
+            var b = basis.data[idx+2];
+            if (r == 255) {
+                basis.data[idx] = dark.r;
+                basis.data[idx+1] = dark.g;
+                basis.data[idx+2] = dark.b;
+                basis.data[idx+3] = dark.a;
+            }
+            if (g == 255) {
+
+                basis.data[idx] = middle.r;
+                basis.data[idx+1] = middle.g;
+                basis.data[idx+2] = middle.b;
+                basis.data[idx+3] = middle.a;
+            }
+            if (b == 255) {
+                basis.data[idx] = bright.r;
+                basis.data[idx+1] = bright.g;
+                basis.data[idx+2] = bright.b;
+                basis.data[idx+3] = bright.a;
+            }
+        }
+    }
+
     return basis;
 }
