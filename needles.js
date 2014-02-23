@@ -1,3 +1,9 @@
+self.addEventListener("message", function(e) {
+    var imgobj = generate_sweater_from_image(e.data);
+    self.postMessage(imgobj);
+});
+
+
 function generate_sweater_from_image(imgobj) {
 
 	//var original = imgobj.data;

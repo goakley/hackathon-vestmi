@@ -3,28 +3,33 @@
         e.target.disabled = true;
         draw_sweater();
     });
-    function draw_sweater() {
+    function draw_sweater(callback) {
         var canvas_source = document.getElementById("image_source");
         var context = canvas_source.getContext("2d");
         var imgobj = context.getImageData(0, 0, canvas_source.width, canvas_source.height);
-        imgobj = generate_sweater_from_image(imgobj);
         var canvas_sweater = document.getElementById("image_sweater");
         canvas_sweater.style.display = "inline";
         canvas_sweater.width = imgobj.width;
         canvas_sweater.height = imgobj.height;
-        context = canvas_sweater.getContext("2d");
-        context.putImageData(imgobj, 0, 0);
-        document.getElementById("button_regen").disabled = false;
+        var worker = new Worker("needles.js");
+        worker.addEventListener("message", function(e) {
+            imgobj = e.data;
+            context = canvas_sweater.getContext("2d");
+            context.putImageData(imgobj, 0, 0);
+            document.getElementById("button_regen").disabled = false;
+            callback();
+        });
+        worker.postMessage(imgobj);
     }
     // use a drawable object to create the sweater
-    function use_image_with_source(width, height, source) {
+    function use_image_with_source(width, height, source, callback) {
         var canvas_source = document.getElementById("image_source");
         canvas_source.style.display = "inline";
         canvas_source.width = width;
         canvas_source.height = height;
         var context = canvas_source.getContext("2d");
         context.drawImage(source, 0, 0, width, height);
-        draw_sweater();
+        draw_sweater(callback);
     }
     // function to get camera approval
     function onclick_camera_approval(event) {
@@ -40,8 +45,9 @@
             event.target.appendChild(document.createTextNode("Take a picture with your camera/webcam"));
             event.target.addEventListener("click", function(e) {
                 event.target.disabled = true;
-                use_image_with_source(video.videoWidth, video.videoHeight, video);
-                event.target.disabled = false;
+                use_image_with_source(video.videoWidth, video.videoHeight, video, function() {
+                    event.target.disabled = false;
+                });
             });
             video.addEventListener("canplay", function(e) {
                 event.target.disabled = false;
