@@ -36,13 +36,11 @@
           FB.getLoginStatus(fbhandler);
           FB.Event.subscribe('auth.authResponseChange', fbhandler);
           function fbhandler(response) {
-              console.log("HI");
               if (response.status === 'connected') {
                   var button = document.getElementById("button_facebook");
                   button.removeChild(button.firstChild);
                   button.appendChild(document.createTextNode("Take Facebook profile picture"));
                   buttons.enable("facebook");
-                  document.getElementById("button_publish").disabled = false;
               } else if (response.status === 'not_authorized') {
                   // logged in, unauthorized with app
                   FB.login(function(){}, {scope:'email,user_photos,publish_actions'});

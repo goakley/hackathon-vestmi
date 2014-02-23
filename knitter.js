@@ -42,6 +42,11 @@ var buttons = (function(){
     };
     result.enable = function(id) { update(id, true); };
     result.disable = function(id) { update(id, false); };
+    result.is_enabled = function(id) {
+        if (id)
+            return buttons[id].enabled;
+        return enabled;
+    };
     return result;
 })();
 buttons.enable();
@@ -55,7 +60,6 @@ buttons.enable();
         var image = undefined;
         result.redraw = function() {
             document.getElementById("image_minecraft").getContext("2d").drawImage((image ? image : basis), 0, 0, 64, 32);
-            console.log(document.getElementById("image_minecraft").toDataURL("image/png"));
         };
         var reqevent = undefined;
         document.getElementById("minecraft_name").addEventListener("input", function(event) {
@@ -78,7 +82,6 @@ buttons.enable();
         });
         return result;
     })();
-    console.log(minecraft);
 
     // draw a sweater based on the given source information
     function draw_sweater(width, height, source) {
@@ -108,9 +111,10 @@ buttons.enable();
             worker.addEventListener("message", function(e) {
                 context.putImageData(e.data, 0, 0);
                 document.getElementById("button_regen").disabled = false;
-                document.getElementById("button_publish").disabled = false;
                 buttons.enable();
                 buttons.enable();
+                if (buttons.is_enabled("facebook"))
+                    document.getElementById("button_publish").disabled = false;
             });
             console.log(context.getImageData(0,0,64,32));
             worker.postMessage({basis:context.getImageData(0,0,64,32),sweater:e.data});
