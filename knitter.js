@@ -1,10 +1,11 @@
-(function() {
+(function(){
     var buttons = [];
     var basis = new Image();
     basis.src = "images/basis.png";
 
     // draw a sweater based on the data contained in the image_source canvas
     function draw_sweater(callback) {
+        document.getElementById("button_regen").disabled = true;
         var canvas = document.getElementById("image_source");
         var context = canvas.getContext("2d");
         var imgobj = context.getImageData(0, 0, canvas.width, canvas.height);
@@ -38,17 +39,6 @@
         canvas.getContext("2d").drawImage(source, 0, 0, width, height);
     }
 
-    // use a drawable object to create the sweater
-    function use_image_with_source(width, height, source, callback) {
-        var canvas_source = document.getElementById("image_source");
-        canvas_source.style.display = "inline";
-        canvas_source.width = width;
-        canvas_source.height = height;
-        var context = canvas_source.getContext("2d");
-        context.drawImage(source, 0, 0, width, height);
-        draw_sweater(callback);
-    }
-
     // function to get camera approval
     function onclick_camera_approval(event) {
         // disable the button while waiting for the approval
@@ -63,7 +53,7 @@
             event.target.appendChild(document.createTextNode("Take a picture with your camera/webcam"));
             event.target.addEventListener("click", function(e) {
                 event.target.disabled = true;
-                use_image_with_source(video.videoWidth, video.videoHeight, video);
+                place_image(video.videoWidth, video.videoHeight, video);
                 draw_sweater(function() {
                     event.target.disabled = false;
                 });
@@ -80,8 +70,26 @@
         });
     }
 
+    // function to get facebook image
+    function onclick_facebook(event) {
+        event.target.disabled = true;
+        FB.api("/me/picture?type=large", function(response) {
+            console.log(response.data.url);
+            var img = new Image();
+            img.addEventListener("load", function() {
+                place_image(img.width, img.height, img);
+                draw_sweater(function(){event.target.disabled = false;});
+            });
+            img.crossOrigin = '';
+            img.src = response.data.url;
+        });
+    }
+
     // button initialization code
     (function() {
+        var button = document.getElementById("button_facebook");
+        button.addEventListener("click", onclick_facebook);
+        buttons.push(button);
         // attempt to add the camera button
         if (navigator.getUserMedia) {
             var button = document.createElement("button");
@@ -89,25 +97,9 @@
             button.appendChild(document.createTextNode("Allow access to your camera/webcam"));
             button.addEventListener("click", onclick_camera_approval);
             buttons.push(button);
-        }
-        // add the buttons to the site
-        var sources = document.getElementById("sources");
-        while (sources.firstChild)
-            sources.removeChild(sources.firstChild);
-        if (buttons.length) {
-            // append the list of source buttons
-            var list = document.createElement("ul");
-            for (var i = 0; i < buttons.length; i++) {
-                var li = document.createElement("li");
-                li.appendChild(buttons[i]);
-                list.appendChild(li);
-            }
-            sources.appendChild(list);
-        } else {
-            // tell the user there are no sweater options
-            var p = document.createElement("p");
-            p.appendChild(document.createTextNode("Sorry, we will be unable to generate a sweater for you!"));
-            sources.appendChild(p);
+            var li = document.createElement("li");
+            li.appendChild(button);
+            document.getElementById("sources_list").appendChild(li);
         }
     })();
     // disable the regen button until it's activated for the first time
