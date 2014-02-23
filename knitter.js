@@ -41,6 +41,7 @@
             event.target.addEventListener("click", function(e) {
                 event.target.disabled = true;
                 use_image_with_source(video.videoWidth, video.videoHeight, video);
+                event.target.disabled = false;
             });
             video.addEventListener("canplay", function(e) {
                 event.target.disabled = false;
