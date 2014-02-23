@@ -41,13 +41,25 @@ function teddy(basis, sweater) {
         colors.push(foundColors[fc]);
     }
 
-    console.log("Colors before sort:");
     colors.sort(function(a,b) {
         return a.brightness - b.brightness
     });
 
-    console.log(colors)
-    return basis;
+    // Find the darkest color, the lightest color, and a mid color
+    var colors_to_use = new Array();
+    colors_to_use.push(colors.shift());
+    if (colors.length >= 2) {
+        colors_to_use[0] = colors.shift();
+        colors_to_use[2] = colors.pop();
+    } else {
+        colors_to_use = colors
+    }
+    if (colors.length > 0) {
+        var idx = Math.floor(colors.length/2);
+        colors_to_use[1] = colors[idx];
+    }
+    console.log("Colors to use: " + colors_to_use);
+    return draw_vest(basis, colors_to_use);
 }
 
 function draw_vest(basis, colors) {
