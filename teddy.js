@@ -5,6 +5,7 @@ self.addEventListener("message", function(e) {
 
 function teddy(basis, sweater) {
     var swidth = sweater.width;
+    function pixel_idx(x,y) { return 4*y*swidth + x*4; };
     // brightness from
     // http://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
     function brightness(r,g,b) { return Math.sqrt(r*r*0.241 + g*g*0.691 + b*b*.068) };
@@ -23,7 +24,8 @@ function teddy(basis, sweater) {
     };
     var foundColors = {};
 
-    for (var i = 0; i < swidth; i+=4) {
+    var start = pixel_idx(0,sweater.height/2);
+    for (var i = start; i < start+(swidth*4); i+=4) {
         var r = sweater.data[i];
         var g = sweater.data[i+1];
         var b = sweater.data[i+2];
