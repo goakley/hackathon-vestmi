@@ -8,13 +8,10 @@ var buttons = (function(){
         buttons["facebook"] = {button:button,enabled:false};
         // attempt to add the camera button
         if (navigator.getUserMedia) {
-            button = document.createElement("button");
-            button.id = "button_camera";
+            button = document.getElementById("button_camera");
+            button.removeChild(button.firstChild);
             button.appendChild(document.createTextNode("Allow access to your camera/webcam"));
             buttons["camera"] = {button:button,enabled:true};
-            var li = document.createElement("li");
-            li.appendChild(button);
-            document.getElementById("sources_list").appendChild(li);
         }
     })();
     var update = function(id, enable) {

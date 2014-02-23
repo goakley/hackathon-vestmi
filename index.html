@@ -15,7 +15,8 @@
     <p>A sweater vest generator for all your profile pictures!  Keeps your profile picture warm and stylish.&#153;</p>
     <div id="sources">
       <ul id="sources_list">
-        <li><div id="fb-root"></div><button id="button_facebook" disabled>Take your Facebook profile picture</button></li>
+        <li><div id="fb-root"></div><button id="button_facebook" disabled>Facebook</button></li>
+        <li><button id="button_camera" disabled>Camera/Webcam</button></li>
       </ul>
     </div>
     <canvas id="image_source" width=0 height=0></canvas>
@@ -31,17 +32,27 @@
               cookie     : true,
               xfbml      : true
           });
-          FB.Event.subscribe('auth.authResponseChange', function(response) {
+          FB.getLoginStatus(fbhandler);
+          FB.Event.subscribe('auth.authResponseChange', fbhandler);
+          function fbhandler(response) {
+              console.log("HI");
               if (response.status === 'connected') {
+                  var button = document.getElementById("button_facebook");
+                  button.removeChild(button.firstChild);
+                  button.appendChild(document.createTextNode("Take Facebook profile picture"));
                   buttons.enable("facebook");
+                  FB.api("/me/albums", function(response) {
+                      console.log(response);
+                  });
+
               } else if (response.status === 'not_authorized') {
                   // logged in, unauthorized with app
-                  FB.login();
+                  FB.login(function(){}, {scope:"user_photos"});
               } else {
                   // not logged in
-                  FB.login();
+                  FB.login(function(){}, {scope:"user_photos"});
               }
-          });
+          }
       };
       // Load the SDK asynchronously
       (function(d){
