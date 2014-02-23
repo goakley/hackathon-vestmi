@@ -64,8 +64,6 @@ buttons.enable();
                 document.getElementById("button_regen").disabled = false;
                 buttons.enable();
                 buttons.enable();
-                if (callback)
-                    callback();
             });
             worker.postMessage({basis:context.getImageData(0,0,64,32),sweater:e.data});
         });
