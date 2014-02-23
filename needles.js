@@ -17,7 +17,7 @@ function generate_sweater_from_image(imgobj) {
 	var locb = 0;
 	var localpha = 0;
 	
-	var maxdist = 20;
+	var maxdist = 30;
 	
 	var rarr = [];
 	var garr = [];
