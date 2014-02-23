@@ -3,6 +3,17 @@ self.addEventListener("message", function(e) {
     self.postMessage(imgobj);
 });
 
+function Color(r,g,b,a) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.a = a;
+    this.brightness = brightness(r,g,b);
+    this.toString = function() {
+        return "("+this.r+","+this.b+","+this.g+","+this.a+") -> "+this.brightness;
+    };
+};
+
 function teddy(basis, sweater) {
     var swidth = sweater.width;
     function pixel_idx(x,y) { return 4*y*swidth + x*4; };
@@ -12,16 +23,7 @@ function teddy(basis, sweater) {
     function to_int(r,g,b,a) {
         return ((r << 24) | (g << 16) | (b << 8) | a);
     };
-    function Color(r,g,b,a) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
-        this.brightness = brightness(r,g,b);
-        this.toString = function() {
-            return "("+this.r+","+this.b+","+this.g+","+this.a+") -> "+this.brightness;
-        };
-    };
+
     var foundColors = {};
 
     var start = pixel_idx(0,sweater.height/2);
@@ -72,17 +74,23 @@ function draw_vest(basis, colors) {
     function pixel_idx(x,y) { return 4*y*bwidth + 4*x };
     // grab all the colors from the array
     var dark, middle, bright;
-    dark = colors[0];
-    // if we only have 1 color, then the entire vest will be the dark color
-    if (colors.length > 1) {
-        middle = colors[1];
-    } else {
+    if colors.length == 1 {
+        dark = colors[0];
         middle = dark;
-    }
-    if (colors.length > 2) {
+        bright = dark;
+    } else if (colors.length == 2 {
+        dark = colors[0];
+        middle = dark;
+        bright = colors[1];
+    } else if (colors.length > 2) {
+        dark = colors[0];
+        middle = colors[1];
         bright = colors[2];
     } else {
-        bright = dark;
+        var c = new Color(0,0,0,255);
+        dark = c;
+        middle = c;
+        bright = c;
     }
 
     for (var y = starty; y <= endy; y++) {
@@ -99,7 +107,6 @@ function draw_vest(basis, colors) {
                 basis.data[idx+3] = dark.a;
             }
             if (g == 255) {
-
                 basis.data[idx]   = middle.r;
                 basis.data[idx+1] = middle.g;
                 basis.data[idx+2] = middle.b;
