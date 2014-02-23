@@ -7,8 +7,14 @@ ul {
 }
 li {
 }
+#sources {
+    display:block;
+}
 video, canvas {
     margin:auto;
+}
+#image_source, #image_sweater {
+    display:inline;
 }
 button {
     margin:1ex auto;
