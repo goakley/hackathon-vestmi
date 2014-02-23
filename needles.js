@@ -17,7 +17,7 @@ function generate_sweater_from_image(imgobj) {
 	var locb = 0;
 	var localpha = 0;
 	
-	var maxdist = 30;
+	var maxdist = 80;
 	
 	var rarr = [];
 	var garr = [];
@@ -61,6 +61,21 @@ function generate_sweater_from_image(imgobj) {
 		}
 	}
 	
+	//get vote percents
+	var totalvotes = imgobj.width * imgobj.height;
+	var top5 = [0,0,0,0,0];
+	for(var q = 0; q < rbglen; q++) {
+		for(var z = 0; z < 5; z++) {
+			if (rbgvotes[q] > top5[z]) {
+				for(var zz = 4; zz > z; zz--) {
+					top5[zz] = top5[zz-1];
+				}
+				top5[z] = rbgvotes[q];
+			}
+		}
+	}
+	var top5ratio = 100 - Math.floor((top5[0] + top5[1] + top5[2] + top5[3] + top5[4]) / totalvotes);
+	
 	//best - index of most popular color
 	for(var y = 0; y < imgobj.height; y++) {
 		for(var x = 0; x < imgobj.width; x++) {
@@ -77,7 +92,8 @@ function generate_sweater_from_image(imgobj) {
 	
 	//data is now only that color	
 	varunitsize = Math.floor((Math.random()*60)+40);
-	var maxwidth = 10;
+	var mindwidth = 2;
+	var maxwidth = 9;
 	
 	//how many counts to move in each direction
 	var vcounter = Math.floor((Math.random()*5)+1);
@@ -90,6 +106,11 @@ function generate_sweater_from_image(imgobj) {
 	var ncg = 255 - garr[best];
 	var ncb = 255 - barr[best];
 	
+	usedr = [];
+	usedg = [];
+	usedb = [];
+	usedcolors = 0; 
+	
 	//verticals
 	for (var y = 0; y < imgobj.height; y += varunitsize) {
 		//draw one line from the left going up in y, one from the right going down in y
@@ -100,18 +121,30 @@ function generate_sweater_from_image(imgobj) {
 		
 		var vc = vcounter; //temps for iterating
 		var hc = hcounter;
-		var linewidth = Math.floor((Math.random()*maxwidth)+1);
-		var linewidth2 = Math.floor((Math.random()*maxwidth)+1);
+		var linewidth = Math.floor((Math.random()*maxwidth)+mindwidth);
+		var linewidth2 = Math.floor((Math.random()*maxwidth)+mindwidth);
 		var maxwidth = Math.max(linewidth, linewidth2);
 
+		var trials = 0;
+		var success = false;
 		var temparr = shortvote(original, imgobj.width, imgobj.height);
-		while (getcdist(rarr[best], temparr[0], garr[best], temparr[1], barr[best], temparr[2]) <= maxdist * 2) {
+		while (getcdist(rarr[best], temparr[0], garr[best], temparr[1], barr[best], temparr[2]) <= maxdist * 3 && success == false && trials <= top5ratio) {
 			temparr = shortvote(original, imgobj.width, imgobj.height);
+			success = true;
+			for (u = 0; u < usedcolors; u++) {
+				if (temparr[0] == usedr[u] && temparr[1] == usedg[u] && temparr[2] == usedb[u]) {
+					success = false;
+				}
+			}
+			trials++;
 		}
 		ncr = temparr[0];
 		ncg = temparr[1];		
 		ncb = temparr[2];
-		
+		usedr[usedcolors] = temparr[0];
+		usedg[usedcolors] = temparr[1];
+		usedb[usedcolors] = temparr[2];
+		usedcolors++;
 		
 		while (nx1 <= imgobj.width+maxwidth && nx2 >= -maxwidth) {
 			
@@ -156,17 +189,30 @@ function generate_sweater_from_image(imgobj) {
 		
 		var vc = vcounter; //temps for iterating
 		var hc = hcounter;
-		var linewidth = Math.floor((Math.random()*maxwidth)+1);
-		var linewidth2 = Math.floor((Math.random()*maxwidth)+1);
+		var linewidth = Math.floor((Math.random()*maxwidth)+mindwidth);
+		var linewidth2 = Math.floor((Math.random()*maxwidth)+mindwidth);
 		var maxwidth = Math.max(linewidth, linewidth2);	
 		
+		var trials = 0;
+		var success = false;
 		var temparr = shortvote(original, imgobj.width, imgobj.height);
-		while (getcdist(rarr[best], temparr[0], garr[best], temparr[1], barr[best], temparr[2]) <= maxdist * 2) {
+		while (getcdist(rarr[best], temparr[0], garr[best], temparr[1], barr[best], temparr[2]) <= maxdist * 3 && success == false && trials <= top5ratio) {
 			temparr = shortvote(original, imgobj.width, imgobj.height);
+			success = true;
+			for (u = 0; u < usedcolors; u++) {
+				if (temparr[0] == usedr[u] && temparr[1] == usedg[u] && temparr[2] == usedb[u]) {
+					success = false;
+				}
+			}
+			trials++;
 		}
 		ncr = temparr[0];
 		ncg = temparr[1];		
 		ncb = temparr[2];
+		usedr[usedcolors] = temparr[0];
+		usedg[usedcolors] = temparr[1];
+		usedb[usedcolors] = temparr[2];
+		usedcolors++;
 		
 		while (ny1 <= imgobj.height+maxwidth && ny2 >= -maxwidth) {
 			//draw if in range		
@@ -240,8 +286,8 @@ function getcdist(r1, r2, b1, b2, g1, g2) {
 function shortvote(imgobj, width, height) {
 	strw = Math.floor((Math.random()*width));
 	endw = Math.floor((Math.random()*height));
-	strh = Math.floor((Math.random()*Math.floor((width-strw)/3))+strw);
-	endh = Math.floor((Math.random()*Math.floor((height-strh)/3))+strh);
+	strh = Math.floor((Math.random()*Math.floor((width-strw)/5))+strw);
+	endh = Math.floor((Math.random()*Math.floor((height-strh)/5))+strh);
 	
 	var locr = 0;
 	var locg = 0;
