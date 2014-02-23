@@ -1,3 +1,19 @@
+function dataURItoBlob(dataURI) {
+    // separate out the mime component
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    // convert base64 to raw binary data held in a string
+    // doesn't handle URLEncoded DataURIs
+    var byteString = window.atob(dataURI.split(',')[1]);
+    // write the bytes of the string to an ArrayBuffer
+    var ia = new Uint8Array(byteString.length);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    // write the ArrayBuffer to a blob, and you're done
+    return new Blob([ia], {type:mimeString});
+}
+
+
 var buttons = (function(){
     var result = {};
     var enabled = true;
@@ -92,6 +108,7 @@ buttons.enable();
             worker.addEventListener("message", function(e) {
                 context.putImageData(e.data, 0, 0);
                 document.getElementById("button_regen").disabled = false;
+                document.getElementById("button_publish").disabled = false;
                 buttons.enable();
                 buttons.enable();
             });
@@ -144,6 +161,35 @@ buttons.enable();
         });
     }
     document.getElementById("button_facebook").addEventListener("click", onclick_facebook);
+    document.getElementById("button_publish").addEventListener("click", function() {
+        document.getElementById("button_publish").disabled = true;
+        FB.api('/me/albums', function(response){
+	    for(var index = 0; index < response.data.length; index++){
+		if(response.data[index].name == "Profile Pictures") {
+                    var albumID = response.data[index].id;
+                    var fd = new FormData();
+                    fd.append("access_token", FB.getAccessToken());
+                    fd.append("source", dataURItoBlob(document.getElementById("image_sweater").toDataURL("image/png")));
+                    fd.append("message", "Sweater Vest #"+ parseInt(Math.random().toString().substr(2)));
+                    var req = new XMLHttpRequest();
+                    req.open("POST", "https://graph.facebook.com/me/photos?access_token="+FB.getAccessToken());
+                    req.onreadystatechange = function() {
+                        if (req.readyState == 4) {
+                            if (req.status == 200) {
+                                var pid = JSON.parse(req.responseText).id;
+                                window.open("http://www.facebook.com/photo.php?fbid="+pid+"&makeprofile=1");
+                            } else {
+                                console.log("ERROR:");
+                                console.log(req.status);
+                                console.log(req.responseText);
+                            }
+                        }
+                    };
+                    req.send(fd);
+                }
+	    }
+	});
+    });
 
     // have the regen button redraw a sweater
     document.getElementById("button_regen").addEventListener("click", function(e) {

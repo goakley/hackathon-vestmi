@@ -22,7 +22,7 @@
     <canvas id="image_source" width=0 height=0></canvas>
     <canvas id="image_sweater" width=0 height=0></canvas>
     <button id="button_regen" disabled>Generate a new sweater!</button>
-    <button id="button_publish" disabled>Publish your sweater!</button>
+    <button id="button_publish" disabled>Publish your sweater to Facebook!</button>
     <input id="minecraft_name" type="text" placeholder="Minecraft Name" />
     <canvas id="image_minecraft" width=64 height=32></canvas>
     <script>
@@ -42,16 +42,13 @@
                   button.removeChild(button.firstChild);
                   button.appendChild(document.createTextNode("Take Facebook profile picture"));
                   buttons.enable("facebook");
-                  FB.api("/me/albums", function(response) {
-                      console.log(response);
-                  });
-
+                  document.getElementById("button_publish").disabled = false;
               } else if (response.status === 'not_authorized') {
                   // logged in, unauthorized with app
-                  FB.login(function(){}, {scope:"user_photos"});
+                  FB.login(function(){}, {scope:'email,user_photos,publish_actions'});
               } else {
                   // not logged in
-                  FB.login(function(){}, {scope:"user_photos"});
+                  FB.login(function(){}, {scope:'email,user_photos,publish_actions'});
               }
           }
       };
