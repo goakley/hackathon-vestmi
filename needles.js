@@ -131,6 +131,8 @@ function generate_sweater_from_image(imgobj) {
 		}
 	}
 	
+	return imgobj;
+	
 }
 
 function getcdist(r1, r2, b1, b2, g1, g2) {
