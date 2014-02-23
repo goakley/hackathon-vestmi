@@ -64,6 +64,7 @@ function generate_sweater_from_image(imgobj) {
 	//--------------------------------------------------
 	//Diagonals from vertical and horizontals
 	//--------------------------------------------------
+	var maxwidth = 12;
 	
 	//how many counts to move in each direction
 	var vcounter = Math.floor((Math.random()*5)+1);
@@ -86,32 +87,23 @@ function generate_sweater_from_image(imgobj) {
 		
 		var vc = vcounter; //temps for iterating
 		var hc = hcounter;
-		while (nx1 <= imgobj.width && nx2 >= 0) {
+		var linewidth = Math.floor((Math.random()*maxwidth)+1);
+		var linewidth2 = Math.floor((Math.random()*maxwidth)+1);
+		var maxwidth = Math.max(linewidth, linewidth2);
+		while (nx1 <= imgobj.width+maxwidth && nx2 >= -maxwidth) {
 			//draw if in range
-			if (ny >= 0 && ny <= 640) {
-				imgobj.data[4*ny*w + 4*nx1] = ncr;
-				imgobj.data[4*ny*w + 4*nx1 + 1] = ncg;
-				imgobj.data[4*ny*w + 4*nx1 + 2] = ncb;
-				imgobj.data[4*ny*w + 4*nx1 + 3] = 255;
-				
-				imgobj.data[4*ny*w + 4*nx2] = ncr;
-				imgobj.data[4*ny*w + 4*nx2 + 1] = ncg;
-				imgobj.data[4*ny*w + 4*nx2 + 2] = ncb;
-				imgobj.data[4*ny*w + 4*nx2 + 3] = 255;
+			for (var lw = 0; lw < linewidth; lw++) {
+				if (ny >= 0 && ny <= imgobj.height) {
+					imgobj = drawline(imgobj, ny+lw, w, nx1, nx2, ncr, ncg, ncb)
+				}
 			}
 			
 			var fny = imgobj.height - ny;
-			if (fny >= 0 && fny <= 640)	{
-				//draw the other two lines
-				imgobj.data[4*fny*w + 4*nx1] = ncr;
-				imgobj.data[4*fny*w + 4*nx1 + 1] = ncg;
-				imgobj.data[4*fny*w + 4*nx1 + 2] = ncb;
-				imgobj.data[4*fny*w + 4*nx1 + 3] = 255;
-				
-				imgobj.data[4*fny*w + 4*nx2] = ncr;
-				imgobj.data[4*fny*w + 4*nx2 + 1] = ncg;
-				imgobj.data[4*fny*w + 4*nx2 + 2] = ncb;
-				imgobj.data[4*fny*w + 4*nx2 + 3] = 255;
+			for (var lw = 0; lw < linewidth2; lw++) {
+				if (fny >= 0 && fny <= imgobj.height)	{
+					//draw the other two lines
+					imgobj = drawline(imgobj, fny+lw, w, nx1, nx2, ncr, ncg, ncb)
+				}
 			}
 			
 			//update the next coordinate
@@ -140,32 +132,23 @@ function generate_sweater_from_image(imgobj) {
 		
 		var vc = vcounter; //temps for iterating
 		var hc = hcounter;
-		while (ny1 <= imgobj.height && ny2 >= 0) {
+		var linewidth = Math.floor((Math.random()*maxwidth)+1);
+		var linewidth2 = Math.floor((Math.random()*maxwidth)+1);
+		var maxwidth = Math.max(linewidth, linewidth2);
+		while (ny1 <= imgobj.height+maxwidth && ny2 >= -maxwidth) {
 			//draw if in range
-			if (nx >= 0 && nx <= 640) {
-				imgobj.data[4*ny1*w + 4*nx] = ncr;
-				imgobj.data[4*ny1*w + 4*nx + 1] = ncg;
-				imgobj.data[4*ny1*w + 4*nx + 2] = ncb;
-				imgobj.data[4*ny1*w + 4*nx + 3] = 255;
-				
-				imgobj.data[4*ny2*w + 4*nx] = ncr;
-				imgobj.data[4*ny2*w + 4*nx + 1] = ncg;
-				imgobj.data[4*ny2*w + 4*nx + 2] = ncb;
-				imgobj.data[4*ny2*w + 4*nx + 3] = 255;
+			for (var lw = 0; lw < linewidth; lw++) {
+				if (nx >= 0 && nx <= imgobj.width) {
+					imgobj = drawhline(imgobj, ny1+lw, w, ny2, nx, ncr, ncg, ncb)
+				}
 			}
 			
 			var fnx = imgobj.width - nx;
-			if (fnx >= 0 && fnx <= 640)	{
-				//draw the other two lines
-				imgobj.data[4*ny1*w + 4*nx] = ncr;
-				imgobj.data[4*ny1*w + 4*nx + 1] = ncg;
-				imgobj.data[4*ny1*w + 4*nx + 2] = ncb;
-				imgobj.data[4*ny1*w + 4*nx + 3] = 255;
-				
-				imgobj.data[4*ny2*w + 4*nx] = ncr;
-				imgobj.data[4*ny2*w + 4*nx + 1] = ncg;
-				imgobj.data[4*ny2*w + 4*nx + 2] = ncb;
-				imgobj.data[4*ny2*w + 4*nx + 3] = 255;
+			for (var lw = 0; lw < linewidth2; lw++) {
+				if (fnx >= 0 && fnx <= imgobj.width)	{
+					//draw the other two lines
+					imgobj = drawhline(imgobj, ny1+lw, w, ny2, fnx, ncr, ncg, ncb)
+				}
 			}
 			
 			//update the next coordinate
@@ -186,6 +169,34 @@ function generate_sweater_from_image(imgobj) {
 	
 	return imgobj;
 	
+}
+
+function drawline(imgobj, ny, w, nx1, nx2, ncr, ncg, ncb) {
+	imgobj.data[4*ny*w + 4*nx1] = ncr;
+	imgobj.data[4*ny*w + 4*nx1 + 1] = ncg;
+	imgobj.data[4*ny*w + 4*nx1 + 2] = ncb;
+	imgobj.data[4*ny*w + 4*nx1 + 3] = 255;
+
+	imgobj.data[4*ny*w + 4*nx2] = ncr;
+	imgobj.data[4*ny*w + 4*nx2 + 1] = ncg;
+	imgobj.data[4*ny*w + 4*nx2 + 2] = ncb;
+	imgobj.data[4*ny*w + 4*nx2 + 3] = 255;
+	
+	return imgobj
+}
+
+function drawhline(imgobj, ny1, w, ny2, nx, ncr, ncg, ncb) {
+	imgobj.data[4*ny1*w + 4*nx] = ncr;
+	imgobj.data[4*ny1*w + 4*nx + 1] = ncg;
+	imgobj.data[4*ny1*w + 4*nx + 2] = ncb;
+	imgobj.data[4*ny1*w + 4*nx + 3] = 255;
+	
+	imgobj.data[4*ny2*w + 4*nx] = ncr;
+	imgobj.data[4*ny2*w + 4*nx + 1] = ncg;
+	imgobj.data[4*ny2*w + 4*nx + 2] = ncb;
+	imgobj.data[4*ny2*w + 4*nx + 3] = 255;
+	
+	return imgobj
 }
 
 function getcdist(r1, r2, b1, b2, g1, g2) {
