@@ -6,7 +6,6 @@ self.addEventListener("message", function(e) {
 
 function generate_sweater_from_image(imgobj) {
 
-	//var original = imgobj.data;
 	var original = []
 	for(var q = 0; q < (imgobj.data).length; q++) {
 		original[q] = imgobj.data[q]
@@ -92,8 +91,8 @@ function generate_sweater_from_image(imgobj) {
 	
 	//data is now only that color	
 	varunitsize = Math.floor((Math.random()*60)+40);
-	var mindwidth = 4;
-	var maxwidth = 11;
+	var mindwidth = 2;
+	var maxwidth = 10;
 	
 	//how many counts to move in each direction
 	var vcounter = Math.floor((Math.random()*5)+1);
@@ -353,27 +352,30 @@ function shortvote(imgobj, width, height) {
 function sleeves(olddata, newdata, height, width) {
 	
 	var circlesize = Math.floor(width/4);
-	var leftcenter = -Math.floor(circlesize/3);
-	var rightcenter = width + Math.floor(circlesize/3);
+	var leftcenter = -Math.floor(circlesize/20);
+	var rightcenter = width + Math.floor(circlesize/20);
+	
+	var edge = 8;
 	
 	//triangle
-	var off = Math.floor(width/8);
+	var off = Math.floor(width/6.5);
 
 	for(var y = 0; y < height; y++) {
 		for(var x = 0; x < width; x++) {
 			//circles
-			if ((circdist(leftcenter, x, 0, y) < circlesize) || (circdist(rightcenter, x, 0, y) < circlesize)) {
-				if ((circdist(leftcenter, x, 20, y) < circlesize - 6) || (circdist(rightcenter, x, 20, y) < circlesize - 6)) { //black edges
-					newdata[4*y*width + 4*x] = olddata[4*y*width + 4*x];
-					newdata[4*y*width + 4*x + 1] = olddata[4*y*width + 4*x + 1];
-					newdata[4*y*width + 4*x + 2] = olddata[4*y*width + 4*x + 2];
-					newdata[4*y*width + 4*x + 3] = olddata[4*y*width + 4*x + 3];
-				}
-				else {
+			if ((circdist(leftcenter, x, 30, y) < circlesize) || (circdist(rightcenter, x, 30, y) < circlesize)) {
+				newdata[4*y*width + 4*x] = olddata[4*y*width + 4*x];
+				newdata[4*y*width + 4*x + 1] = olddata[4*y*width + 4*x + 1];
+				newdata[4*y*width + 4*x + 2] = olddata[4*y*width + 4*x + 2];
+				newdata[4*y*width + 4*x + 3] = olddata[4*y*width + 4*x + 3];			
+				if ((circdist(leftcenter, x, 30, y) >= circlesize - 5) && (circdist(rightcenter, x, 30, y) >= circlesize - 5)) {
 					newdata[4*y*width + 4*x] = 0;
 					newdata[4*y*width + 4*x + 1] = 0;
 					newdata[4*y*width + 4*x + 2] = 0;
-					newdata[4*y*width + 4*x + 3] = 255;	
+					newdata[4*y*width + 4*x + 3] = 255;				
+				}
+				if ((y <= edge || x <= edge || x >= width-edge) && ((circdist(leftcenter, x, 30, y) < circlesize - 5) || (circdist(rightcenter, x, 30, y) < circlesize - 5))) {
+					newdata[4*y*width + 4*x + 3] = 0;	
 				}
 			}
 		}
@@ -385,11 +387,35 @@ function sleeves(olddata, newdata, height, width) {
 				newdata[4*y*width + 4*x] = olddata[4*y*width + 4*x];
 				newdata[4*y*width + 4*x + 1] = olddata[4*y*width + 4*x + 1];
 				newdata[4*y*width + 4*x + 2] = olddata[4*y*width + 4*x + 2];
-				newdata[4*y*width + 4*x + 3] = olddata[4*y*width + 4*x + 3];				
+				newdata[4*y*width + 4*x + 3] = olddata[4*y*width + 4*x + 3];	
+				if (Math.abs(x - Math.floor(width/2)) >= off - 5) {
+					newdata[4*y*width + 4*x] = 0;
+					newdata[4*y*width + 4*x + 1] = 0;
+					newdata[4*y*width + 4*x + 2] = 0;
+					newdata[4*y*width + 4*x + 3] = 255;	
+				}
+				if (y <= edge) { //ok
+					newdata[4*y*width + 4*x + 3] = 0;	
+				}
 			}
 		}
 		off -= 0.5
 	}
+	
+	//rest of edges
+	for(var y = 0; y < height; y++) {
+		for(var x = 0; x < width; x++) {
+			if (x <= edge || x >= width-edge || y <= edge || y >= height-edge) {
+				if (newdata[4*y*width + 4*x + 3] == 255) {
+					newdata[4*y*width + 4*x] = 0;
+					newdata[4*y*width + 4*x + 1] = 0;
+					newdata[4*y*width + 4*x + 2] = 0;
+				}
+			}
+		}
+	}
+	
+	
 
 	return newdata
 }
