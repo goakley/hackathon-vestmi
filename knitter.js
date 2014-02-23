@@ -3,6 +3,12 @@
         e.target.disabled = true;
         draw_sweater();
     });
+    document.getElementById("image_sweater").addEventListener("click", function(e) {
+        window.open(e.target.toDataURL("image/png"));
+    });
+    document.getElementById("image_minecraft").addEventListener("click", function(e) {
+        window.open(e.target.toDataURL("image/png"));
+    });
     var basis = new Image();
     basis.src = "images/basis.png";
     function draw_sweater(callback) {
